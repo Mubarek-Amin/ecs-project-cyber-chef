@@ -12,10 +12,12 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success'}}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
     steps:
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: OIDC
         uses: aws-actions/configure-aws-credentials@v6.3.0
@@ -30,7 +32,7 @@ jobs:
         run: |
           cd ./Terraform
           terraform init
-          terraform fmt $$ terraform validate
+          terraform fmt -check -recursive && terraform validate
 
       - name: Trivy IaC scan
         uses: aquasecurity/trivy-action@v0.36.0
@@ -45,12 +47,19 @@ jobs:
           sudo curl -Lo /usr/local/bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v0.67.0/terragrunt_linux_amd64
           sudo chmod +x /usr/local/bin/terragrunt
           terragrunt --version
-
+      - name: resolve env
+        run: |
+          BRANCH="${{github.event.workflow_run.head_branch}}"
+          if [ "$BRANCH" = "main" ]; then
+            echo "ENV=prod" >> "$GITHUB_ENV"
+          else
+            echo "ENV=$BRANCH" >> "$GITHUB_ENV"
+          fi
       - name: terraform deploy
         env:
           IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
         run: |
-          cd Terraform/live/dev
+          cd Terraform/live/$ENV
           terragrunt init
           terragrunt plan
           terragrunt apply --auto-approve
