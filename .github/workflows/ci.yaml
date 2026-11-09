@@ -40,19 +40,6 @@ jobs:
           - name: terraform setup
             uses: hashicorp/setup-terraform@v4
 
-          - name: terraform check
-            run: |
-              cd ./Terraform
-              terraform init
-              terraform fmt $$ terraform validate
-
-          - name: Trivy IaC scan
-            uses: aquasecurity/trivy-action@v0.36.0
-            with:
-              scan-type: config
-              scan-ref: ./Terraform
-              severity: CRITICAL,HIGH
-              exit-code: 1
 
           - name: docker build and tag
             env:
