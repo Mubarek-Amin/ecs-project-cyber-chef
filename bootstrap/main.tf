@@ -1,4 +1,4 @@
-resource "aws_ecr_repository" "ECS_TC"{
+resource "aws_ecr_repository" "ECS_CC"{
  name = "ecs_tc"
  image_tag_mutability = "MUTABLE"
  image_scanning_configuration {
@@ -6,8 +6,8 @@ resource "aws_ecr_repository" "ECS_TC"{
  }
 }
 
-resource "aws_s3_bucket" "tc_ecs_s3"{
-  bucket = "s3-ecs-tc"
+resource "aws_s3_bucket" "cc_ecs_s3"{
+  bucket = "s3-ecs-cc"
   versioning {
     enabled = true
   }
@@ -20,7 +20,7 @@ resource "aws_s3_bucket" "tc_ecs_s3"{
   }
   
   tags= {
-    name = "s3_ecs_tc"
+    name = "s3_ecs_cc"
   }
 }
 data "aws_iam_policy_document" "assume" {

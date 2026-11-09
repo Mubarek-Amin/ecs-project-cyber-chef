@@ -30,7 +30,7 @@ jobs:
         terragrunt --version
     - name: destroy
       run: |
-        cd ./Terraform/live/dev
+        cd ./terraform/live/dev
         terragrunt destroy --auto-approve
 
 

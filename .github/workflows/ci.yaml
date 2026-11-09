@@ -62,7 +62,7 @@ jobs:
 
           - name: terraform review
             run: |
-              cd Terraform/live/$ENV
+              cd terraform/live/$ENV
               terragrunt init
               terragrunt plan
 
